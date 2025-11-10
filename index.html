@@ -1036,25 +1036,43 @@
             });
         });
 
-        confirmBtn.addEventListener('click', (e) => {
-            console.log('Confirm button clicked!');
-            console.log('Current selections:', selectedOptions);
-            console.log('Button has active class:', confirmBtn.classList.contains('active'));
+        confirmBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
 
-            if (selectedOptions.length === 2) {
-                const targetScene = getSceneFromOptions(selectedOptions);
-                console.log('Target scene:', targetScene);
+            console.log('=== Confirm button clicked ===');
+            console.log('Selected options:', selectedOptions);
+            console.log('Button classList:', confirmBtn.classList.toString());
+            console.log('Has active class:', confirmBtn.classList.contains('active'));
 
-                if (targetScene) {
-                    console.log('Transitioning to scene', targetScene);
-                    showScene(targetScene);
-                } else {
-                    console.error('No valid scene found for options:', selectedOptions);
-                }
-            } else {
-                console.log('Need exactly 2 options, currently have:', selectedOptions.length);
+            // Check if button is actually active
+            if (!confirmBtn.classList.contains('active')) {
+                console.log('Button not active - ignoring click');
+                return;
             }
-        }, true);
+
+            // Only proceed if we have exactly 2 selections
+            if (selectedOptions.length !== 2) {
+                console.log('ERROR: Need exactly 2 options, currently have:', selectedOptions.length);
+                alert('Please select exactly 2 options!');
+                return;
+            }
+
+            // Get the target scene
+            const targetScene = getSceneFromOptions(selectedOptions);
+            console.log('Calculating target scene from:', selectedOptions);
+            console.log('Target scene determined:', targetScene);
+
+            if (!targetScene) {
+                console.error('ERROR: No valid scene found for options:', selectedOptions);
+                alert('Invalid option combination: ' + selectedOptions.join(' + '));
+                return;
+            }
+
+            // Perform the transition
+            console.log('SUCCESS: Transitioning to scene', targetScene);
+            showScene(targetScene);
+        }, false);
 
         // Scene 5: Generate confetti
         function createConfetti() {
