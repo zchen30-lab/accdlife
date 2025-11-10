@@ -213,19 +213,26 @@
             border: 6px solid #000;
             cursor: pointer;
             box-shadow: 6px 6px 0 #000;
-            opacity: 0.3;
-            pointer-events: none;
-            transition: all 0.3s;
-        }
-
-        .confirm-btn.active {
             opacity: 1;
-            pointer-events: all;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
         }
 
-        .confirm-btn.active:hover {
+        .confirm-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: #999;
+        }
+
+        .confirm-btn:not(:disabled):hover {
             transform: translate(-2px, -2px);
             box-shadow: 8px 8px 0 #000;
+            background: #45a049;
+        }
+
+        .confirm-btn:not(:disabled):active {
+            transform: translate(2px, 2px);
+            box-shadow: 4px 4px 0 #000;
         }
 
         /* Scene 3 Styles - Sleep + Study */
@@ -784,7 +791,7 @@
             <button class="option-btn" data-option="social">Social</button>
             <button class="option-btn" data-option="study">Study</button>
         </div>
-        <button class="confirm-btn" id="confirmBtn">Confirm</button>
+        <button class="confirm-btn" id="confirmBtn" disabled>Confirm</button>
     </div>
 
     <!-- Scene 3: Sleep + Study (Nerd Success) -->
@@ -1025,54 +1032,41 @@
                     }
                 }
 
-                // Update confirm button state
+                // Update confirm button state using disabled attribute
                 if (selectedOptions.length === 2) {
-                    confirmBtn.classList.add('active');
-                    console.log('Confirm button activated. Selected:', selectedOptions);
+                    confirmBtn.disabled = false;
+                    console.log('Confirm button ENABLED. Selected:', selectedOptions);
                 } else {
-                    confirmBtn.classList.remove('active');
-                    console.log('Confirm button deactivated. Selected:', selectedOptions);
+                    confirmBtn.disabled = true;
+                    console.log('Confirm button DISABLED. Selected:', selectedOptions);
                 }
             });
         });
 
-        confirmBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
+        confirmBtn.addEventListener('click', function() {
+            console.log('=== CONFIRM CLICKED ===');
+            console.log('Button disabled?', confirmBtn.disabled);
+            console.log('Selected:', selectedOptions);
 
-            console.log('=== Confirm button clicked ===');
-            console.log('Selected options:', selectedOptions);
-            console.log('Button classList:', confirmBtn.classList.toString());
-            console.log('Has active class:', confirmBtn.classList.contains('active'));
-
-            // Check if button is actually active
-            if (!confirmBtn.classList.contains('active')) {
-                console.log('Button not active - ignoring click');
-                return;
-            }
-
-            // Only proceed if we have exactly 2 selections
+            // Double check we have 2 selections
             if (selectedOptions.length !== 2) {
-                console.log('ERROR: Need exactly 2 options, currently have:', selectedOptions.length);
-                alert('Please select exactly 2 options!');
+                console.error('ERROR: Not exactly 2 options');
                 return;
             }
 
-            // Get the target scene
+            // Get target scene
             const targetScene = getSceneFromOptions(selectedOptions);
-            console.log('Calculating target scene from:', selectedOptions);
-            console.log('Target scene determined:', targetScene);
+            console.log('Target scene:', targetScene);
 
             if (!targetScene) {
-                console.error('ERROR: No valid scene found for options:', selectedOptions);
-                alert('Invalid option combination: ' + selectedOptions.join(' + '));
+                console.error('ERROR: Invalid combination');
                 return;
             }
 
-            // Perform the transition
-            console.log('SUCCESS: Transitioning to scene', targetScene);
+            // Transition to scene
+            console.log('TRANSITIONING NOW to scene', targetScene);
             showScene(targetScene);
-        }, false);
+        });
 
         // Scene 5: Generate confetti
         function createConfetti() {
