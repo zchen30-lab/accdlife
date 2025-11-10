@@ -1016,21 +1016,35 @@
 
         confirmBtn.addEventListener('click', () => {
             if (selectedOptions.length === 2) {
-                const sorted = selectedOptions.sort();
+                // Create a sorted copy to avoid mutating the original array
+                const sorted = [...selectedOptions].sort();
                 const combination = sorted.join('+');
 
+                console.log('Selected options:', selectedOptions);
+                console.log('Sorted combination:', combination);
+
                 let targetScene;
-                if (combination === 'sleep+study') {
+
+                // Check all possible combinations
+                if (sorted[0] === 'sleep' && sorted[1] === 'study') {
                     targetScene = 3;
-                } else if (combination === 'social+study') {
+                    console.log('Going to Scene 3: Sleep + Study');
+                } else if (sorted[0] === 'social' && sorted[1] === 'study') {
                     targetScene = 4;
-                } else if (combination === 'sleep+social') {
+                    console.log('Going to Scene 4: Social + Study');
+                } else if (sorted[0] === 'sleep' && sorted[1] === 'social') {
                     targetScene = 5;
+                    console.log('Going to Scene 5: Sleep + Social');
+                } else {
+                    console.log('No matching combination found');
                 }
 
                 if (targetScene) {
+                    console.log('Switching to scene:', targetScene);
                     showScene(targetScene);
                 }
+            } else {
+                console.log('Not exactly 2 options selected:', selectedOptions.length);
             }
         });
 
