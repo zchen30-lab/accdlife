@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACCD College Life - Pixel Art Interactive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .scene {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        /* Scene 1 Styles */
+        #scene1 {
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+        }
+
+        .gate-container {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 40px;
+        }
+
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            background: #FF6347;
+            margin: 0 auto 20px;
+            border: 4px solid #000;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 2px 2px 0 #666;
+        }
+
+        .gate {
+            width: 200px;
+            height: 280px;
+            background: #8B4513;
+            border: 8px solid #654321;
+            margin: 0 auto;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .gate:hover {
+            transform: scale(1.05);
+            border-color: #FFD700;
+        }
+
+        .gate::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 80%;
+            width: 16px;
+            height: 16px;
+            background: #FFD700;
+            border: 3px solid #000;
+            transform: translate(-50%, -50%);
+        }
+
+        .gate-opening {
+            animation: gateOpen 1s forwards;
+        }
+
+        @keyframes gateOpen {
+            to {
+                transform: perspective(400px) rotateY(-90deg);
+                opacity: 0;
+            }
+        }
+
+        .student {
+            width: 60px;
+            height: 100px;
+            background: #4169E1;
+            border: 3px solid #000;
+            margin: 20px auto 0;
+            position: relative;
+        }
+
+        .student-head {
+            width: 40px;
+            height: 40px;
+            background: #FFD8A8;
+            border: 3px solid #000;
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .fade-to-white {
+            animation: fadeWhite 1s forwards;
+        }
+
+        @keyframes fadeWhite {
+            to {
+                background: white;
+            }
+        }
+
+        /* Scene 2 Styles */
+        #scene2 {
+            background: #F5F5F5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .dialog-box {
+            background: white;
+            border: 6px solid #000;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 8px 8px 0 #000;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .dialog-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+        .dialog-subtitle {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .dialog-hint {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .options-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .option-btn {
+            width: 180px;
+            height: 180px;
+            background: #FFF;
+            border: 6px solid #000;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 6px 6px 0 #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0 #000;
+        }
+
+        .option-btn.selected {
+            background: #FFD700;
+            transform: translate(3px, 3px);
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .confirm-btn {
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            background: #4CAF50;
+            border: 6px solid #000;
+            cursor: pointer;
+            box-shadow: 6px 6px 0 #000;
+            opacity: 0.3;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .confirm-btn.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .confirm-btn.active:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0 #000;
+        }
+
+        /* Scene 3 Styles - Sleep + Study */
+        #scene3 {
+            background: #E8E8E8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .ticker {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .ticker-content {
+            display: flex;
+            animation: scroll 20s linear infinite;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .company-logo {
+            min-width: 200px;
+            height: 60px;
+            margin: 10px 20px;
+            border: 4px solid #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-google { background: #4285F4; color: white; }
+        .logo-tesla { background: #E82127; color: white; }
+        .logo-meta { background: #0668E1; color: white; }
+        .logo-apple { background: #A3AAAE; color: black; }
+        .logo-amazon { background: #FF9900; color: black; }
+
+        .nerd-character {
+            text-align: center;
+            position: relative;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .nerd-body {
+            width: 100px;
+            height: 150px;
+            background: #000;
+            border: 4px solid #000;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .nerd-head {
+            width: 80px;
+            height: 80px;
+            background: #FFD8A8;
+            border: 4px solid #000;
+            position: absolute;
+            top: -85px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .glasses {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .glass {
+            width: 24px;
+            height: 20px;
+            background: rgba(0,0,0,0.8);
+            border: 3px solid #000;
+        }
+
+        .pimples {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #FF6B6B;
+            border: 1px solid #000;
+        }
+
+        .pimple1 { top: 20px; right: 10px; }
+        .pimple2 { top: 50px; left: 8px; }
+
+        .teeth {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+        }
+
+        .tooth {
+            width: 10px;
+            height: 16px;
+            background: white;
+            border: 2px solid #000;
+        }
+
+        .phd-cap {
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cap-top {
+            width: 100px;
+            height: 8px;
+            background: #000;
+            border: 2px solid #000;
+        }
+
+        .cap-base {
+            width: 70px;
+            height: 30px;
+            background: #000;
+            border: 2px solid #000;
+            margin: 0 auto;
+        }
+
+        .backpack {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            width: 40px;
+            height: 60px;
+            background: #8B4513;
+            border: 3px solid #000;
+        }
+
+        .peace-sign {
+            position: absolute;
+            bottom: 20px;
+            right: -60px;
+            font-size: 48px;
+        }
+
+        .books {
+            margin-top: 20px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .book {
+            width: 30px;
+            height: 60px;
+            border: 3px solid #000;
+        }
+
+        .book1 { background: #FF6B6B; transform: rotate(-10deg); }
+        .book2 { background: #4ECDC4; }
+        .book3 { background: #FFD93D; transform: rotate(10deg); }
+        .book4 { background: #95E1D3; transform: rotate(-5deg); }
+
+        .scene-label {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            background: white;
+            padding: 10px 20px;
+            border: 4px solid #000;
+        }
+
+        /* Scene 4 Styles - Social + Study */
+        #scene4 {
+            background: #2C2C2C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .exhausted-character {
+            text-align: center;
+            position: relative;
+        }
+
+        .exhausted-body {
+            width: 80px;
+            height: 140px;
+            background: #4169E1;
+            border: 4px solid #000;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .exhausted-head {
+            width: 60px;
+            height: 70px;
+            background: #FFD8A8;
+            border: 4px solid #000;
+            position: absolute;
+            top: -75px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .eye-bags {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+        }
+
+        .eye-bag {
+            width: 16px;
+            height: 12px;
+            background: #4A4A4A;
+            border: 2px solid #000;
+            border-radius: 0 0 50% 50%;
+        }
+
+        .iv-drip {
+            position: absolute;
+            top: -150px;
+            right: -100px;
+        }
+
+        .iv-stand {
+            width: 4px;
+            height: 180px;
+            background: #888;
+            border: 2px solid #000;
+            margin: 0 auto;
+        }
+
+        .iv-bag {
+            width: 40px;
+            height: 60px;
+            background: rgba(255, 200, 200, 0.5);
+            border: 3px solid #000;
+            margin-bottom: 10px;
+        }
+
+        .iv-tube {
+            width: 80px;
+            height: 2px;
+            background: #888;
+            border: 1px solid #000;
+            position: absolute;
+            bottom: 100px;
+            right: 0;
+        }
+
+        .energy-cans {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .can {
+            width: 25px;
+            height: 50px;
+            border: 3px solid #000;
+        }
+
+        .can1 { background: #00FF00; }
+        .can2 { background: #FF00FF; }
+        .can3 { background: #00FFFF; }
+        .can4 { background: #FFFF00; }
+        .can5 { background: #FF6600; }
+
+        .can-label {
+            font-size: 8px;
+            background: black;
+            color: white;
+            text-align: center;
+            padding: 2px;
+        }
+
+        .crowd {
+            position: absolute;
+            display: flex;
+            gap: 20px;
+        }
+
+        .crowd-left {
+            left: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .crowd-right {
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .fan {
+            width: 50px;
+            height: 80px;
+            background: #FF69B4;
+            border: 3px solid #000;
+            position: relative;
+            animation: cheer 1.5s infinite;
+        }
+
+        .fan:nth-child(2) {
+            background: #87CEEB;
+            animation-delay: 0.3s;
+        }
+
+        @keyframes cheer {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .fan-head {
+            width: 40px;
+            height: 40px;
+            background: #FFD8A8;
+            border: 3px solid #000;
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .star-eyes {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            animation: twinkle 1s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .star {
+            font-size: 12px;
+            color: #FFD700;
+        }
+
+        /* Scene 5 Styles - Sleep + Social */
+        #scene5 {
+            background: linear-gradient(135deg, #FFA07A 0%, #FFB6C1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: fall 5s infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        .group-hug {
+            position: relative;
+            animation: hugBounce 2s infinite;
+        }
+
+        @keyframes hugBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .main-person {
+            width: 80px;
+            height: 120px;
+            background: #4169E1;
+            border: 4px solid #000;
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+        }
+
+        .main-head {
+            width: 60px;
+            height: 60px;
+            background: #FFD8A8;
+            border: 4px solid #000;
+            position: absolute;
+            top: -65px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .smile {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 15px;
+            border: 3px solid #000;
+            border-top: none;
+            border-radius: 0 0 50% 50%;
+        }
+
+        .friends {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .friend {
+            width: 70px;
+            height: 100px;
+            border: 4px solid #000;
+            position: absolute;
+        }
+
+        .friend1 {
+            background: #FF69B4;
+            left: -70px;
+            top: -10px;
+        }
+
+        .friend2 {
+            background: #87CEEB;
+            right: -70px;
+            top: -10px;
+        }
+
+        .friend3 {
+            background: #98FB98;
+            left: -60px;
+            top: 50px;
+        }
+
+        .friend4 {
+            background: #FFD93D;
+            right: -60px;
+            top: 50px;
+        }
+
+        .credit-cards {
+            position: absolute;
+            bottom: 30%;
+            right: 20%;
+            z-index: 1;
+            animation: wiggle 3s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg) translateX(0); }
+            25% { transform: rotate(2deg) translateX(5px); }
+            75% { transform: rotate(-2deg) translateX(-5px); }
+        }
+
+        .credit-card {
+            width: 120px;
+            height: 75px;
+            background: white;
+            border: 4px solid #000;
+            margin-bottom: 8px;
+            position: relative;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+        }
+
+        .card-text {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            font-size: 10px;
+            color: red;
+            font-weight: bold;
+        }
+
+        .card-amount {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #D00;
+        }
+
+        /* Transitions */
+        .fade-in {
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scene 1: Gate Intro -->
+    <div id="scene1" class="scene active">
+        <div class="gate-container">
+            <div class="logo">
+                <div class="logo-circle"></div>
+                <div class="logo-text">ArtCenter</div>
+            </div>
+            <div class="gate" id="gate">
+                <div class="student">
+                    <div class="student-head"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scene 2: Choice Screen -->
+    <div id="scene2" class="scene">
+        <div class="dialog-box">
+            <div class="dialog-title">Welcome to your ACCD college life.</div>
+            <div class="dialog-subtitle">What kind of path will you choose?</div>
+            <div class="dialog-hint">(Please select two options)</div>
+        </div>
+        <div class="options-container">
+            <button class="option-btn" data-option="sleep">Sleep</button>
+            <button class="option-btn" data-option="social">Social</button>
+            <button class="option-btn" data-option="study">Study</button>
+        </div>
+        <button class="confirm-btn" id="confirmBtn">Confirm</button>
+    </div>
+
+    <!-- Scene 3: Sleep + Study (Nerd Success) -->
+    <div id="scene3" class="scene">
+        <div class="ticker">
+            <div class="ticker-content">
+                <div class="company-logo logo-google">GOOGLE</div>
+                <div class="company-logo logo-tesla">TESLA</div>
+                <div class="company-logo logo-meta">META</div>
+                <div class="company-logo logo-apple">APPLE</div>
+                <div class="company-logo logo-amazon">AMAZON</div>
+                <div class="company-logo logo-google">GOOGLE</div>
+                <div class="company-logo logo-tesla">TESLA</div>
+                <div class="company-logo logo-meta">META</div>
+                <div class="company-logo logo-apple">APPLE</div>
+                <div class="company-logo logo-amazon">AMAZON</div>
+            </div>
+        </div>
+        <div class="nerd-character">
+            <div class="nerd-body">
+                <div class="nerd-head">
+                    <div class="phd-cap">
+                        <div class="cap-top"></div>
+                        <div class="cap-base"></div>
+                    </div>
+                    <div class="glasses">
+                        <div class="glass"></div>
+                        <div class="glass"></div>
+                    </div>
+                    <div class="pimples pimple1"></div>
+                    <div class="pimples pimple2"></div>
+                    <div class="teeth">
+                        <div class="tooth"></div>
+                        <div class="tooth"></div>
+                    </div>
+                </div>
+                <div class="backpack"></div>
+                <div class="peace-sign">✌️</div>
+            </div>
+            <div class="books">
+                <div class="book book1"></div>
+                <div class="book book2"></div>
+                <div class="book book3"></div>
+                <div class="book book4"></div>
+            </div>
+        </div>
+        <div class="scene-label">Path: Sleep + Study</div>
+    </div>
+
+    <!-- Scene 4: Social + Study (Overworked) -->
+    <div id="scene4" class="scene">
+        <div class="crowd crowd-left">
+            <div class="fan">
+                <div class="fan-head">
+                    <div class="star-eyes">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                </div>
+            </div>
+            <div class="fan">
+                <div class="fan-head">
+                    <div class="star-eyes">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exhausted-character">
+            <div class="iv-drip">
+                <div class="iv-bag"></div>
+                <div class="iv-stand"></div>
+                <div class="iv-tube"></div>
+            </div>
+            <div class="exhausted-body">
+                <div class="exhausted-head">
+                    <div class="eye-bags">
+                        <div class="eye-bag"></div>
+                        <div class="eye-bag"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="energy-cans">
+                <div class="can can1">
+                    <div class="can-label">M</div>
+                </div>
+                <div class="can can2">
+                    <div class="can-label">E</div>
+                </div>
+                <div class="can can3">
+                    <div class="can-label">R</div>
+                </div>
+                <div class="can can4">
+                    <div class="can-label">G</div>
+                </div>
+                <div class="can can5">
+                    <div class="can-label">Y</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="crowd crowd-right">
+            <div class="fan">
+                <div class="fan-head">
+                    <div class="star-eyes">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                </div>
+            </div>
+            <div class="fan">
+                <div class="fan-head">
+                    <div class="star-eyes">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scene-label">Path: Social + Study</div>
+    </div>
+
+    <!-- Scene 5: Sleep + Social (Happy but Debt) -->
+    <div id="scene5" class="scene">
+        <div class="confetti" id="confetti"></div>
+
+        <div class="group-hug">
+            <div class="credit-cards">
+                <div class="credit-card">
+                    <div class="card-amount">$5,240</div>
+                    <div class="card-text">TOTAL DUE</div>
+                </div>
+                <div class="credit-card">
+                    <div class="card-amount">$3,890</div>
+                    <div class="card-text">TOTAL DUE</div>
+                </div>
+                <div class="credit-card">
+                    <div class="card-amount">$7,150</div>
+                    <div class="card-text">TOTAL DUE</div>
+                </div>
+            </div>
+
+            <div class="friends">
+                <div class="friend friend1"></div>
+                <div class="friend friend2"></div>
+                <div class="friend friend3"></div>
+                <div class="friend friend4"></div>
+            </div>
+
+            <div class="main-person">
+                <div class="main-head">
+                    <div class="smile"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scene-label">Path: Sleep + Social</div>
+    </div>
+
+    <script>
+        // Scene management
+        let currentScene = 1;
+        const scenes = {
+            1: document.getElementById('scene1'),
+            2: document.getElementById('scene2'),
+            3: document.getElementById('scene3'),
+            4: document.getElementById('scene4'),
+            5: document.getElementById('scene5')
+        };
+
+        function showScene(sceneNum) {
+            Object.values(scenes).forEach(scene => scene.classList.remove('active'));
+            scenes[sceneNum].classList.add('active');
+            scenes[sceneNum].classList.add('fade-in');
+            currentScene = sceneNum;
+        }
+
+        // Scene 1: Gate interaction
+        const gate = document.getElementById('gate');
+        gate.addEventListener('click', () => {
+            gate.classList.add('gate-opening');
+            setTimeout(() => {
+                scenes[1].classList.add('fade-to-white');
+                setTimeout(() => {
+                    showScene(2);
+                }, 1000);
+            }, 1000);
+        });
+
+        // Scene 2: Choice logic
+        const optionBtns = document.querySelectorAll('.option-btn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        let selectedOptions = [];
+
+        // Function to determine which scene to show
+        function getSceneFromOptions(options) {
+            const sorted = [...options].sort();
+
+            // Sleep + Social
+            if (sorted[0] === 'sleep' && sorted[1] === 'social') {
+                return 5;
+            }
+            // Sleep + Study
+            if (sorted[0] === 'sleep' && sorted[1] === 'study') {
+                return 3;
+            }
+            // Social + Study
+            if (sorted[0] === 'social' && sorted[1] === 'study') {
+                return 4;
+            }
+
+            return null;
+        }
+
+        optionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const option = btn.dataset.option;
+
+                if (selectedOptions.includes(option)) {
+                    // Deselect
+                    selectedOptions = selectedOptions.filter(o => o !== option);
+                    btn.classList.remove('selected');
+                } else {
+                    // Select
+                    if (selectedOptions.length < 2) {
+                        selectedOptions.push(option);
+                        btn.classList.add('selected');
+                    } else {
+                        // Already have 2, replace the first one
+                        const firstSelected = document.querySelector(`[data-option="${selectedOptions[0]}"]`);
+                        firstSelected.classList.remove('selected');
+                        selectedOptions.shift();
+                        selectedOptions.push(option);
+                        btn.classList.add('selected');
+                    }
+                }
+
+                // Update confirm button state
+                if (selectedOptions.length === 2) {
+                    confirmBtn.classList.add('active');
+                    console.log('Confirm button activated. Selected:', selectedOptions);
+                } else {
+                    confirmBtn.classList.remove('active');
+                    console.log('Confirm button deactivated. Selected:', selectedOptions);
+                }
+            });
+        });
+
+        confirmBtn.addEventListener('click', (e) => {
+            console.log('Confirm button clicked!');
+            console.log('Current selections:', selectedOptions);
+            console.log('Button has active class:', confirmBtn.classList.contains('active'));
+
+            if (selectedOptions.length === 2) {
+                const targetScene = getSceneFromOptions(selectedOptions);
+                console.log('Target scene:', targetScene);
+
+                if (targetScene) {
+                    console.log('Transitioning to scene', targetScene);
+                    showScene(targetScene);
+                } else {
+                    console.error('No valid scene found for options:', selectedOptions);
+                }
+            } else {
+                console.log('Need exactly 2 options, currently have:', selectedOptions.length);
+            }
+        }, true);
+
+        // Scene 5: Generate confetti
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti');
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#95E1D3', '#FF69B4'];
+
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                confettiContainer.appendChild(confetti);
+            }
+        }
+
+        createConfetti();
+    </script>
+</body>
+</html>
