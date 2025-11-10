@@ -982,6 +982,26 @@
         const confirmBtn = document.getElementById('confirmBtn');
         let selectedOptions = [];
 
+        // Function to determine which scene to show
+        function getSceneFromOptions(options) {
+            const sorted = [...options].sort();
+
+            // Sleep + Social
+            if (sorted[0] === 'sleep' && sorted[1] === 'social') {
+                return 5;
+            }
+            // Sleep + Study
+            if (sorted[0] === 'sleep' && sorted[1] === 'study') {
+                return 3;
+            }
+            // Social + Study
+            if (sorted[0] === 'social' && sorted[1] === 'study') {
+                return 4;
+            }
+
+            return null;
+        }
+
         optionBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const option = btn.dataset.option;
@@ -1005,48 +1025,36 @@
                     }
                 }
 
-                // Update confirm button
+                // Update confirm button state
                 if (selectedOptions.length === 2) {
                     confirmBtn.classList.add('active');
+                    console.log('Confirm button activated. Selected:', selectedOptions);
                 } else {
                     confirmBtn.classList.remove('active');
+                    console.log('Confirm button deactivated. Selected:', selectedOptions);
                 }
             });
         });
 
-        confirmBtn.addEventListener('click', () => {
+        confirmBtn.addEventListener('click', (e) => {
+            console.log('Confirm button clicked!');
+            console.log('Current selections:', selectedOptions);
+            console.log('Button has active class:', confirmBtn.classList.contains('active'));
+
             if (selectedOptions.length === 2) {
-                // Create a sorted copy to avoid mutating the original array
-                const sorted = [...selectedOptions].sort();
-                const combination = sorted.join('+');
-
-                console.log('Selected options:', selectedOptions);
-                console.log('Sorted combination:', combination);
-
-                let targetScene;
-
-                // Check all possible combinations
-                if (sorted[0] === 'sleep' && sorted[1] === 'study') {
-                    targetScene = 3;
-                    console.log('Going to Scene 3: Sleep + Study');
-                } else if (sorted[0] === 'social' && sorted[1] === 'study') {
-                    targetScene = 4;
-                    console.log('Going to Scene 4: Social + Study');
-                } else if (sorted[0] === 'sleep' && sorted[1] === 'social') {
-                    targetScene = 5;
-                    console.log('Going to Scene 5: Sleep + Social');
-                } else {
-                    console.log('No matching combination found');
-                }
+                const targetScene = getSceneFromOptions(selectedOptions);
+                console.log('Target scene:', targetScene);
 
                 if (targetScene) {
-                    console.log('Switching to scene:', targetScene);
+                    console.log('Transitioning to scene', targetScene);
                     showScene(targetScene);
+                } else {
+                    console.error('No valid scene found for options:', selectedOptions);
                 }
             } else {
-                console.log('Not exactly 2 options selected:', selectedOptions.length);
+                console.log('Need exactly 2 options, currently have:', selectedOptions.length);
             }
-        });
+        }, true);
 
         // Scene 5: Generate confetti
         function createConfetti() {
